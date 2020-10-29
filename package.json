@@ -1,0 +1,25 @@
+{
+  "name": "ethml-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnshuJalan/EthML-core.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AnshuJalan/EthML-core/issues"
+  },
+  "homepage": "https://github.com/AnshuJalan/EthML-core#readme",
+  "dependencies": {
+    "web3": "^1.3.0"
+  }
+}
