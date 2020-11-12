@@ -14,6 +14,7 @@ contract EthMLStorage{
 
   using SafeMath for uint256;
   using EthMLGettersLib for EthMLStorageLib.EthMLStorageStruct;
+  using EthMLStorageLib for EthMLStorageLib.EthMLStorageStruct;
 
   EthMLStorageLib.EthMLStorageStruct ethML;
 

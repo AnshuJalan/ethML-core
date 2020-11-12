@@ -4,7 +4,7 @@ pragma solidity ^0.5.0;
 * @dev Library to define the storage type for Eternal Storage Pattern
 */
 
-contract EthMLStorageLib{
+library EthMLStorageLib{
 
   struct Error {
     uint256 errorType; //0: Invalid datapoint, 1: invalid request hash (No such dataset/model)
@@ -12,12 +12,12 @@ contract EthMLStorageLib{
   }
 
   struct Request {
-    bytes32 requestHash; //keccakHash(abi.encodePacked(dataset, model))
+    uint256 modelId; 
+    string dataPoint;
 
-    string datapointIpfs;
+    address caller;
 
     uint256 requestId;
-    uint256 requestType; //0: Classification, 1: Regression
     uint256 predictionsReceived; //newBlock on 5th prediction
     uint256[5] finalValues;
     
@@ -27,7 +27,8 @@ contract EthMLStorageLib{
     
     //keccak256("birth") - required for request aging
     //keccak256("tip")
-    mapping(bytes32 => uint256) requestUintStorage;
+    //keccak256("requestQPosition")
+    mapping(bytes32 => uint256) uintStorage;
   }
 
   struct EthMLStorageStruct{
@@ -36,11 +37,21 @@ contract EthMLStorageLib{
 
     bytes32 currentChallenge;
 
-    uint256[5] requestQ;
+    uint256[] requestQ;
 
-    mapping(uint256 => Request) requestIdtoRequest;
+    mapping(uint256 => Request) requestIdToRequest;
     //Token Vars
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowance;
+  }
+
+  function updateImplementation(EthMLStorageStruct storage self, address _newImpl) internal {
+    require(msg.sender == self.addressStorage[keccak256('owner')], "Not authorised.");
+    self.addressStorage[keccak256('ethMLAddress')] = _newImpl;
+  }
+
+  function setOwner(EthMLStorageStruct storage self, address _newOwner) internal {
+    require(msg.sender == self.addressStorage[keccak256('owner')], "Not authorised.");
+    self.addressStorage[keccak256('owner')] = _newOwner;
   }
 }

@@ -8,8 +8,28 @@ import './EthMLStorage.sol';
 */
 contract EthMLMain is EthMLStorage{
 
+  constructor(address _implAddress) public {
+    //Todo: Call init()
+    ethML.addressStorage[keccak256('ethMLAddress')] = _implAddress;
+    ethML.addressStorage[keccak256('owner')] = msg.sender;
+  }
+
+  /**
+  * @dev Allows for implementation contract upgrades
+  */
+  function updateImplementation(address _newImpl) external {
+    ethML.updateImplementation(_newImpl);
+  }
+
+  /**
+  * @dev sets the new owner
+  */
+  function setOwner(address _newOwner) external {
+    ethML.setOwner(_newOwner);
+  }
+
   function() external payable {
-    address _impl;
+    address _impl = ethML.addressStorage[keccak256('ethMLAddress')];
 
     assembly {
       let ptr := mload(0x40)
