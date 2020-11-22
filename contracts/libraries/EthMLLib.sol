@@ -18,10 +18,10 @@ library EthMLLib {
   * @param _dataPoint IPFS hash of the dataPoint 
   * @param _tip tip value in tokens. 0 for initial testing.
   */
-  function requestPrediction(EthMLStorageLib.EthMLStorageStruct storage self, uint256 _modelId, string calldata _dataPoint, uint256 _tip) external returns(uint256){
-  
-    uint256 id = self.uintStorage[requestCount];
+  function requestPrediction(EthMLStorageLib.EthMLStorageStruct storage self, uint256 _modelId, string memory _dataPoint, uint256 _tip) internal returns(uint256){
+    
     self.uintStorage[requestCount]++;
+    uint256 id = self.uintStorage[requestCount];
 
     EthMLStorageLib.Request memory request;
     self.requestIdToRequest[id] = request;

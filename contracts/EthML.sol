@@ -11,6 +11,10 @@ import './libraries/EthMLLib.sol';
 contract EthML {
 
   using EthMLLib for EthMLStorageLib.EthMLStorageStruct;
-  
+
   EthMLStorageLib.EthMLStorageStruct ethML;
+
+  function requestPrediction(uint256 _modelId,string calldata _dataPoint,uint256 _tip) external returns(uint256){
+    return ethML.requestPrediction(_modelId, _dataPoint, _tip);
+  }
 }
