@@ -14,6 +14,9 @@ contract EthMLMain is EthMLStorage{
     ethML.addressStorage[keccak256('owner')] = msg.sender;
   }
 
+  //Events for testing (remove later)
+  event NewBlock(uint256 id, uint256 prediction);
+
   /**
   * @dev Allows for implementation contract upgrades
   */

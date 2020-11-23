@@ -13,7 +13,10 @@ contract UsingEthML {
   mapping(uint256 => bool) pendingRequests;
   mapping(uint256 => uint256) responses;
 
+  uint256 latestResponseId;
+
   event NewRequest(uint256 modelId, string dataPoint, uint256 tip, uint256 requestId);
+  event ReceivedPrediction(uint256 requestId, uint256 prediction);
   event EthMLContractChanged(address newAddress);
 
   constructor(address _implAddress) public {
@@ -39,5 +42,30 @@ contract UsingEthML {
 
     pendingRequests[_id] = true;
     emit NewRequest(_modelId, _dataPoint, _tip, _id);
+  }
+
+  /**
+  * @dev callback function to allow EthML serve the requested prediction 
+  * to the user contract.
+  */
+  function requestCallback(uint256 _id, uint256 _prediction) external isValidCall(_id){
+    latestResponseId = _id;
+    delete pendingRequests[_id];
+    responses[_id] = _prediction;
+
+    emit ReceivedPrediction(_id, _prediction);
+  }
+
+  /**
+  * @dev view function to allow the user to retrieve the prediction value 
+  */
+  function getLatestResponse() external view returns(uint256) {
+    return responses[latestResponseId];
+  }
+
+  modifier isValidCall(uint256 _id) {
+    require(pendingRequests[_id], "Invalid request id!");
+    require(msg.sender == implAddress, "Not authorized!");
+    _;
   }
 }

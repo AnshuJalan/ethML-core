@@ -1,34 +1,56 @@
 const UsingEthML = artifacts.require("UsingEthML");
 const EthMLMain = artifacts.require("EthMLMain");
+const EthMLAbi = require("../../build/contracts/EthML.json").abi;
 
 contract("UsingEthML", async (accounts) => {
-  let instance;
+  let usingEthML, ethML;
 
-  const [alice] = accounts;
+  const [alice, bob, john, mike, dave, chris] = accounts;
 
   it("is deployed properly", async () => {
-    instance = await UsingEthML.deployed();
-    assert(instance.address !== "");
+    ethML = await EthMLMain.deployed();
+    usingEthML = await UsingEthML.deployed();
+    assert(ethML.address !== "");
+    assert(usingEthML.address !== "");
   });
 
-  it("allows user to request data", async () => {
+  it("allows submission of data", async () => {
+    //Request for prediction through UsingEthML contract
     const dataPoint = "QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D";
     const modelId = 1;
     const tip = 0;
-
-    const result = await instance.requestPrediction(modelId, dataPoint, tip, {
+    await usingEthML.requestPrediction(modelId, dataPoint, tip, {
       from: alice,
     });
 
-    assert(result.logs[0].args.requestId.toNumber() === 1);
+    //Miners (5) submits data
+    const data = web3.eth.abi.encodeFunctionCall(EthMLAbi[1], [1, 356]);
+    await ethML.sendTransaction({
+      from: bob,
+      data,
+    });
+    await ethML.sendTransaction({
+      from: john,
+      data,
+    });
+    await ethML.sendTransaction({
+      from: mike,
+      data,
+    });
+    await ethML.sendTransaction({
+      from: chris,
+      data,
+    });
+    const result = await ethML.sendTransaction({
+      from: dave,
+      data,
+    });
+
+    assert(result.logs[0].args.prediction.toNumber() === 356);
   });
 
-  it("EthML receives the request", async () => {
-    const oracleInstance = await EthMLMain.deployed();
-    const requestCountHash =
-      "0x05de9147d05477c0a5dc675aeea733157f5092f82add148cf39d579cafe3dc98";
-    const res = await oracleInstance.getUintStorage(requestCountHash);
-
-    assert(res.toNumber() === 1);
+  it("UsingEthML receives the request", async () => {
+    const res = await usingEthML.getLatestResponse();
+    assert(res.toNumber() === 356);
   });
 });

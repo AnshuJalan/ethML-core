@@ -14,7 +14,18 @@ contract EthML {
 
   EthMLStorageLib.EthMLStorageStruct ethML;
 
+  /** 
+  * @dev calls the library function to handle requests in EthMLLib
+  */
   function requestPrediction(uint256 _modelId,string calldata _dataPoint,uint256 _tip) external returns(uint256){
     return ethML.requestPrediction(_modelId, _dataPoint, _tip);
+  }
+
+  /**
+  * Test function to accept mining solution and requested prediction value.
+  * Test written in ethMl.test.js
+  */
+  function submitMiningSolutionTest(uint256 _id, uint256 _prediction) external {
+    ethML.submitMiningSolutionTest(_id, _prediction);
   }
 }
