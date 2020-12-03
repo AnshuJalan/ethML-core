@@ -22,6 +22,13 @@ contract EthML {
   }
 
   /**
+  * @dev Allows miners to submit the requested prediction along with the POW nonce.
+  */
+  function submitMiningSolution(uint256 _id, uint256 _prediction, uint256 _nonce) external {
+    ethML.submitMiningSolution(_id, _prediction, _nonce);
+  }
+
+  /**
   * Test function to accept mining solution and requested prediction value.
   * Test written in ethMl.test.js
   */

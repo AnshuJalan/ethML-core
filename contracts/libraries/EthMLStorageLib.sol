@@ -23,7 +23,7 @@ library EthMLStorageLib{
     
     Error error;
 
-    mapping(uint256 => address[5]) valueToMiners;
+    mapping(address => bool) miners;
     
     //keccak256("birth") - required for request aging
     //keccak256("tip")
