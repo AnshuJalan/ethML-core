@@ -42,7 +42,7 @@ library EthMLStorageLib{
     mapping(uint256 => Request) requestIdToRequest;
     //Token Vars
     mapping(address => uint256) balances;
-    mapping(address => mapping(address => uint256)) allowance;
+    mapping(address => mapping(address => uint256)) allowances;
   }
 
   function updateImplementation(EthMLStorageStruct storage self, address _newImpl) internal {

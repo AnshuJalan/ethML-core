@@ -11,11 +11,7 @@ contract EthMLMain is EthMLStorage{
   constructor(address _implAddress) public {
     //Todo: Call init()
 
-    //Uncomment to test- ethMLPoW 
-    ethML.currentChallenge = 0x289783b359a8ceaae95ebfc22d20253fd65753dd61e63796c88ab8f1f2f582d7;
-    ethML.uintStorage[keccak256('difficulty')] = 1;
-
-
+    ethML.initTest();
     ethML.addressStorage[keccak256('ethMLAddress')] = _implAddress;
     ethML.addressStorage[keccak256('owner')] = msg.sender;
   }

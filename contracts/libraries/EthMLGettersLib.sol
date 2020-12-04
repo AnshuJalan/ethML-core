@@ -16,4 +16,8 @@ library EthMLGettersLib {
   function getUintStorage(EthMLStorageLib.EthMLStorageStruct storage self, bytes32 _data) internal view returns(uint){
       return self.uintStorage[_data];
   }
+
+  function totalSupply(EthMLStorageLib.EthMLStorageStruct storage self) internal view returns(uint256) {
+    return self.uintStorage[keccak256('totalSupply')];
+  }
 }

@@ -17,6 +17,29 @@ library EthMLLib {
   event NewBlock(uint256 id, uint256 prediction); //Add rest of the values 
 
   /**
+  * @notice 
+  * @dev init_test sets up the genesis block and loads the proxy main with the initial mine.
+  * this init is specifically for the ethMLToken testing.
+  */
+  function initTest(EthMLStorageLib.EthMLStorageStruct storage self) internal returns(bool) {
+    self.balances[address(this)] = 2**256 - 1;
+
+    // to test- ethMLPoW 
+    self.currentChallenge = 0x289783b359a8ceaae95ebfc22d20253fd65753dd61e63796c88ab8f1f2f582d7;
+    self.uintStorage[keccak256('difficulty')] = 1;
+
+    // raw testing tokens
+    self.balances[0x7CD86862A4AAA9E701CF255c2cE00fF13d50AD6F] = 1000 * 10**18;
+    self.balances[0x4B5dB76845B70fE426cF82014D67A778931F62c7] = 1000 * 10**18;
+    self.balances[0x184fb4e5FCe775244f2C5dEFEedF73f71c3351DD] = 1000 * 10**18;
+    self.balances[0xc1A215d9355967d36D78248A57b6308D36aF4b25] = 1000 * 10**18;
+    self.balances[0x4e150E015077eb2eF6cA1e9D66da81ca04729fDa] = 1000 * 10**18;
+    self.balances[0xA7e2DADf5ca04C01Cc06307be44fA5543909FfBB] = 1000 * 10**18;
+
+    self.uintStorage[keccak256('totalSupply')] = 6000 * 10**18;
+  } 
+
+  /**
   * @dev User contract can call this to add a request to the queue, along with a tip.
   * @param _modelId id of the model whose prediction we want
   * @param _dataPoint IPFS hash of the dataPoint 

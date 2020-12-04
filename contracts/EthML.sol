@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import './libraries/EthMLStorageLib.sol';
+import './libraries/EthMLTransferLib.sol';
 import './libraries/EthMLLib.sol';
 
 /**
@@ -11,6 +12,7 @@ import './libraries/EthMLLib.sol';
 contract EthML {
 
   using EthMLLib for EthMLStorageLib.EthMLStorageStruct;
+  using EthMLTransferLib for EthMLStorageLib.EthMLStorageStruct;
 
   EthMLStorageLib.EthMLStorageStruct ethML;
 
@@ -34,5 +36,44 @@ contract EthML {
   */
   function submitMiningSolutionTest(uint256 _id, uint256 _prediction) external {
     ethML.submitMiningSolutionTest(_id, _prediction);
+  }
+
+  /* Utility token functions */
+  function name() external pure returns(string memory) {
+    return "EthML Token";
+  }
+
+  function symbol() external pure returns(string memory) {
+    return "EML";
+  }
+
+  function decimals() external pure returns(uint256) {
+    return 18;
+  }
+
+  /**
+  * @dev for testing ethMlToken
+  */
+  function transferTest(address _to, uint256 _value) external returns(bool) {
+    return ethML.transferTest(_to, _value);
+  }
+
+   /**
+  * @dev for testing ethMlToken
+  */
+  function transferFromTest(address _from, address _to, uint256 _value) external returns(bool) {
+    return ethML.transferFromTest(_from, _to, _value);
+  }
+
+  function transfer(address _to, uint256 _value) external returns(bool) {
+    return ethML.transfer(_to, _value);
+  }
+
+  function transferFrom(address _from, address _to, uint256 _value) external returns(bool) {
+    return ethML.transferFrom(_from, _to, _value);
+  }
+
+  function approve(address _spender, uint256 _value) external returns(bool){
+    return ethML.approve(_spender, _value);
   }
 }
