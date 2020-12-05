@@ -45,6 +45,18 @@ contract("EthMLMain", async (accounts) => {
     assert(res.logs[0].args.prediction.toNumber() === 356);
   });
 
+  it("generates fresh supply of token as reward", async () => {
+    let bal;
+    for (let i = 1; i < 6; i++) {
+      bal = await ethML.balanceOf(accounts[i]);
+      if (bal.toString() !== "1050000000000000000000")
+        assert(false, "Invalid balance.");
+    }
+
+    bal = await ethML.totalSupply();
+    assert(bal.toString() === "6250000000000000000000");
+  });
+
   it("UsingEthML receives the request", async () => {
     const res = await usingEthML.getLatestResponse();
     assert(res.toNumber() === 356);

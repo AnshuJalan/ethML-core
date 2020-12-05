@@ -21,9 +21,11 @@ library EthMLStorageLib{
     uint256 predictionsReceived; //newBlock on 5th prediction
     uint256[5] finalValues;
     
+    address[5] miners;
+
     Error error;
 
-    mapping(address => bool) miners;
+    mapping(address => bool) minersSubmitted;
     
     //keccak256("birth") - required for request aging
     //keccak256("tip")

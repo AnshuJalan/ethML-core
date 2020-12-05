@@ -54,11 +54,11 @@ contract("EthMLToken", async (accounts) => {
       data,
     });
 
-    let bal;
-
-    await usingEthML.requestPrediction(1, "Hello", "500000000000000000000");
-
-    bal = await ethML.balanceOf(ethML.address);
-    assert(bal.toString() === "500000000000000000000");
+    try {
+      await usingEthML.requestPrediction(1, "Hello", "500000000000000000000");
+      assert(true);
+    } catch (err) {
+      assert(false);
+    }
   });
 });

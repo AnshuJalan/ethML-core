@@ -17,7 +17,7 @@ contract EthMLMain is EthMLStorage{
   }
 
   //Events for testing (remove later)
-  event NewBlock(uint256 id, uint256 prediction);
+  event NewBlock(uint256 id, uint256 prediction, uint256 nonce);
 
   /**
   * @dev Allows for implementation contract upgrades
