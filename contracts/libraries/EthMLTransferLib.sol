@@ -54,7 +54,7 @@ library EthMLTransferLib {
   */
   function _transfer(EthMLStorageLib.EthMLStorageStruct storage self, address _from, address _to, uint256 _value)
     internal {
-      require(_value > 0, "Transferring a non positive amount");
+      require(_value >= 0, "Transferring a non positive amount");
       require(balanceOf(self, _from) >= _value, "Insufficient transfer balance");
       self.balances[_from] -= _value;
       self.balances[_to] += _value;

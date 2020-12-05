@@ -1,5 +1,6 @@
 const UsingEthML = artifacts.require("UsingEthML");
 const EthMLMain = artifacts.require("EthMLMain");
+const BN = require("bn.js");
 const EthMLAbi = require("../../build/contracts/EthML.json").abi;
 
 contract("EthML", async (accounts) => {
@@ -10,6 +11,7 @@ contract("EthML", async (accounts) => {
   it("is deployed properly", async () => {
     ethML = await EthMLMain.deployed();
     usingEthML = await UsingEthML.deployed();
+
     assert(ethML.address !== "");
     assert(usingEthML.address !== "");
   });

@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import './EthMLStorageLib.sol';
+import './EthMLTransferLib.sol';
 
 /**
 * @dev library functions for EthML.sol 
@@ -15,6 +16,7 @@ library EthMLLib {
 
   //Events
   event NewBlock(uint256 id, uint256 prediction); //Add rest of the values 
+  event ReceivedRequest(uint256 id, uint256 datapoint, uint256 tip);
 
   /**
   * @notice 
@@ -22,7 +24,8 @@ library EthMLLib {
   * this init is specifically for the ethMLToken testing.
   */
   function initTest(EthMLStorageLib.EthMLStorageStruct storage self) internal returns(bool) {
-    self.balances[address(this)] = 2**256 - 1;
+    //Uncomment in main
+    //self.balances[address(this)] = 2**256 - 1;
 
     // to test- ethMLPoW 
     self.currentChallenge = 0x289783b359a8ceaae95ebfc22d20253fd65753dd61e63796c88ab8f1f2f582d7;
@@ -65,7 +68,8 @@ library EthMLLib {
     self.requestQ.push(id);
 
     //TODO: Deduct tip
-
+    if(_tip != 0)
+      EthMLTransferLib.transferFromTest(self, msg.sender, address(this), _tip); //Change to transferFrom for build.
 
     //TODO: Emit event
     return id;
