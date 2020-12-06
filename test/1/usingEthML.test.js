@@ -25,10 +25,9 @@ contract("UsingEthML", async (accounts) => {
 
   it("EthML receives the request", async () => {
     const oracleInstance = await EthMLMain.deployed();
-    const requestCountHash =
-      "0x05de9147d05477c0a5dc675aeea733157f5092f82add148cf39d579cafe3dc98";
-    const res = await oracleInstance.getUintStorage(requestCountHash);
 
-    assert(res.toNumber() === 1);
+    const res = await oracleInstance.getCurrentVariables();
+
+    assert(res[4] === "QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D");
   });
 });

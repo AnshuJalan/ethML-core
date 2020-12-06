@@ -144,8 +144,10 @@ library EthMLLib {
     newRequest.uintStorage[tip] = _tip;
     newRequest.uintStorage[requestQPosition] = self.requestQ.length;
 
-    if(self.requestQ.length == 0)
+    if(self.requestQ.length == 0) {
       self.uintStorage[lastCheckpoint] = now;
+      self.uintStorage[currentRequestId] = id;
+    }
 
     self.requestQ.push(id);
 

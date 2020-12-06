@@ -38,6 +38,21 @@ contract EthMLStorage{
     return ethML.getUintStorage(_data);
   }
 
+  /**
+  * @dev returns all the variables necassary to serve a prediction request and
+  * for a new system block.
+  */
+  function getCurrentVariables() external view returns(bytes32, uint256, uint256, uint256, string memory) {
+    return ethML.getCurrentVariables();
+  }
+
+  /**
+  * @dev returns true if a new request is available to be served.
+  * i.e currentRequestId != 0.
+  */
+  function canGetVariables() external view returns(bool) {
+    return ethML.canGetVariables();
+  }
   
   /*ERC20 utility token helpers*/
 
