@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/AnshuJalan/EthML-core#readme",
   "dependencies": {
+    "cli-table": "^0.3.4",
+    "level": "^6.0.1",
     "web3": "^1.3.0"
   }
 }

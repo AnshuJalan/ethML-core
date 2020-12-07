@@ -1,3 +1,5 @@
 build/
 node_modules/
 
+model_store/
+manual_testing/

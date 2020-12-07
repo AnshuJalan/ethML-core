@@ -23,7 +23,7 @@ library EthMLGettersLib {
     return (
       self.currentChallenge,
       self.uintStorage[keccak256('currentRequestId')],
-      self.uintStorage[keccak256('diffculty')],
+      self.uintStorage[keccak256('difficulty')],
       self.requestIdToRequest[self.uintStorage[keccak256('currentRequestId')]].modelId,
       self.requestIdToRequest[self.uintStorage[keccak256('currentRequestId')]].dataPoint
     );

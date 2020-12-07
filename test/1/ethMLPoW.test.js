@@ -23,15 +23,17 @@ contract("EthMLMain", async (accounts) => {
       from: accounts[0],
     });
 
-    const challenge =
-      "0x289783b359a8ceaae95ebfc22d20253fd65753dd61e63796c88ab8f1f2f582d7";
+    const vars = await ethML.getCurrentVariables();
+    const challenge = vars[0];
+    const difficulty = vars[2];
 
     let res;
 
     for (let i = 1; i < 6; i++) {
       let nonce = 0;
-      let result = BigInt("0x" + "f".repeat(64));
-      while (result > BigInt(challenge)) {
+      let target = BigInt(challenge) / BigInt(difficulty);
+      result = BigInt("0x" + "f".repeat(64));
+      while (result > target) {
         nonce++;
         result = BigInt(web3.utils.soliditySha3(challenge, accounts[i], nonce));
       }
