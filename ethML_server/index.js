@@ -3,9 +3,9 @@ const Miner = require("./utils/miner");
 const DisplayTable = require("./utils/display");
 const configure = require("./utils/configure");
 const BN = require("bn.js");
-const logUpdate = require("log-update");
+const modelRunner = require("./utils/model-runner");
 
-//Get reference to database store
+//Get reference to database store. To prevent mutex locks this is commented.
 //const db = level("./ethML_server/model_store");
 
 //Initialize miner
@@ -94,12 +94,7 @@ async function startMining({ web3, ethML, ethMLAbi }) {
   console.log("*-------------Started Mining-------------*");
   DisplayTable({ id, challenge, difficulty });
 
-  let i = 0;
-
-  // setInterval(() => {
-  //   const { frames } = spinner;
-  //   logUpdate(frames[(i = ++i % frames.length)] + " Unicorns");
-  // }, spinner.interval);
+  const prediction = await modelRunner.getPrediction(modelId, dataPoint);
 
   const nonce = await miner.findUnderTargetHash(
     web3,
@@ -107,12 +102,8 @@ async function startMining({ web3, ethML, ethMLAbi }) {
     new BN(difficulty, 10)
   );
 
-  //clearInterval(timerId);
-
   console.log("Found POW solution: ", nonce);
-
-  //Test
-  const prediction = 356;
+  console.log("Prediction for given request: ", prediction);
 
   await submitMiningSolution({ web3, ethML, ethMLAbi, id, prediction, nonce });
 }
@@ -124,5 +115,4 @@ async function startMining({ web3, ethML, ethMLAbi }) {
   web3.eth.defaultAccount = accounts[process.argv[2]];
   startEventListener({ web3, ethML, ethMLAbi });
   checkAndMine({ web3, ethML, ethMLAbi });
-  //console.log(await ethML.methods.canGetVariables().call());
 })();
