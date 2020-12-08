@@ -30,7 +30,7 @@ library EthMLGettersLib {
   }
 
   function canGetVariables(EthMLStorageLib.EthMLStorageStruct storage self) internal view returns(bool) {
-    return self.uintStorage[keccak256('currentRequestId')] != 0;
+    return self.uintStorage[keccak256('requestsInQ')] != 0;
   }
 
   function totalSupply(EthMLStorageLib.EthMLStorageStruct storage self) internal view returns(uint256) {

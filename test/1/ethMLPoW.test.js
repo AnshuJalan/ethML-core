@@ -63,4 +63,38 @@ contract("EthMLMain", async (accounts) => {
     const res = await usingEthML.getLatestResponse();
     assert(res.toNumber() === 356);
   });
+
+  it("allows submission of another data", async () => {
+    //Request for prediction through UsingEthML contract
+    const dataPoint = "QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D";
+    const modelId = 1;
+    const tip = 0;
+    await usingEthML.requestPrediction(modelId, dataPoint, tip, {
+      from: accounts[0],
+    });
+
+    const vars = await ethML.getCurrentVariables();
+    const challenge = vars[0];
+    const difficulty = vars[2];
+
+    let res;
+
+    for (let i = 1; i < 6; i++) {
+      let nonce = 0;
+      let target = BigInt(challenge) / BigInt(difficulty);
+      result = BigInt("0x" + "f".repeat(64));
+      while (result > target) {
+        nonce++;
+        result = BigInt(web3.utils.soliditySha3(challenge, accounts[i], nonce));
+      }
+      let data = web3.eth.abi.encodeFunctionCall(EthMLAbi[1], [2, 358, nonce]);
+      //console.log(i);
+      res = await ethML.sendTransaction({
+        from: accounts[i],
+        data,
+      });
+    }
+
+    //assert(res.logs[0].args.prediction.toNumber() === 358);
+  });
 });

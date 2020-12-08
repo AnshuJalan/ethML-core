@@ -12,18 +12,18 @@ library EthMLStorageLib{
   }
 
   struct Request {
-    uint256 modelId; 
     string dataPoint;
 
     address caller;
 
+    uint256 modelId; 
     uint256 requestId;
     uint256 predictionsReceived; //newBlock on 5th prediction
     uint256[5] finalValues;
     
     address[5] miners;
-
-    Error error;
+  
+    bool isValid;
 
     mapping(address => bool) minersSubmitted;
     

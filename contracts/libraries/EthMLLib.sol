@@ -20,10 +20,14 @@ library EthMLLib {
   bytes32 public constant expiryThreshold = 0xf3b61ed74195ed072c4bce5b03aa99fc9ea41769bc3c650e65bb794e49281734;
   bytes32 public constant totalSupply = 0x7c80aa9fdbfaf9615e4afc7f5f722e265daca5ccc655360fa5ccacf9c267936d;
   bytes32 public constant reward = 0x594d34f771ec633c2f562d96c03f9299763555317b87ad49b1aa8c08079dde0e;
+  bytes32 public constant requestsInQ = 0x9d35db82da5d0cf70eb254e4850bba2332d9a0dd52374be5ffb3866e6f97269b;
 
   //Events
   event NewBlock(uint256 id, uint256 prediction, uint256 nonce); 
   event ReceivedRequest(uint256 id, string datapoint, uint256 tip);
+
+  //Testing events
+  event Test1(uint256 prediction);
 
   /**
   * @notice 
@@ -36,7 +40,7 @@ library EthMLLib {
 
     // to test- ethMLPoW 
     self.currentChallenge = 0x289783b359a8ceaae95ebfc22d20253fd65753dd61e63796c88ab8f1f2f582d7;
-    self.uintStorage[difficulty] = 2500;
+    self.uintStorage[difficulty] = 500;
 
     // raw testing tokens
     self.balances[0x7CD86862A4AAA9E701CF255c2cE00fF13d50AD6F] = 1000 * 10**18;
@@ -48,6 +52,7 @@ library EthMLLib {
 
     self.uintStorage[totalSupply] = 6000 * 10**18;
     self.uintStorage[reward] = 50 * 10 ** 18;
+    self.uintStorage[requestsInQ] = 0;
   } 
 
   /**
@@ -55,6 +60,7 @@ library EthMLLib {
   * adjusts the difficulty
   */
   function newBlock(EthMLStorageLib.EthMLStorageStruct storage self, uint256 _id, uint256 _nonce) internal returns(bool){
+    
     EthMLStorageLib.Request storage request = self.requestIdToRequest[_id];
 
     //Simple difficulty adjustment.
@@ -89,10 +95,12 @@ library EthMLLib {
     self.uintStorage[totalSupply] += 250 * 10 ** 18;
 
     //update variables
-    delete self.requestQ[request.uintStorage[requestQPosition]];
+    request.isValid = false;
     delete self.requestIdToRequest[_id];
 
-    if(self.requestQ.length != 0) {
+    self.uintStorage[requestsInQ]--;
+
+    if(self.uintStorage[requestsInQ] != 0) {
       self.uintStorage[lastCheckpoint] = now;
       self.currentChallenge = keccak256(abi.encodePacked(self.currentChallenge, _nonce, blockhash(block.number - 1)));
       self.uintStorage[currentRequestId] = _getTopId(self);
@@ -101,6 +109,8 @@ library EthMLLib {
     }
 
     emit NewBlock(_id, prediction, _nonce);
+
+    return true;
   }
 
   /**
@@ -110,7 +120,7 @@ library EthMLLib {
     uint256 maxPri = 0;
     uint256 maxIndex = 0; //Records current max priority 
     for(uint i = 0; i < self.requestQ.length; i++) {
-      if((self.requestIdToRequest[self.requestQ[i]].uintStorage[tip] + (now - self.requestIdToRequest[self.requestQ[i]].uintStorage[birth])) > maxPri){
+      if((self.requestIdToRequest[self.requestQ[i]].uintStorage[tip] + (now - self.requestIdToRequest[self.requestQ[i]].uintStorage[birth])) > maxPri && self.requestIdToRequest[self.requestQ[i]].isValid){
         maxPri = self.requestIdToRequest[self.requestQ[i]].uintStorage[tip];
         maxIndex = i;
       }
@@ -142,14 +152,29 @@ library EthMLLib {
     newRequest.uintStorage[birth] = now;
     newRequest.uintStorage[tip] = _tip;
     newRequest.uintStorage[requestQPosition] = self.requestQ.length;
+    newRequest.isValid = true;
 
-    if(self.requestQ.length == 0) {
+    if(self.uintStorage[requestsInQ] == 0) {
       self.uintStorage[lastCheckpoint] = now;
       self.uintStorage[currentRequestId] = id;
       self.currentChallenge = keccak256(abi.encodePacked(self.currentChallenge, newRequest.caller, blockhash(block.number - 1)));
     }
 
-    self.requestQ.push(id);
+    // Insert the new request at the first invalidated postion or
+    // if no pos available then insert at the end.
+    bool isInserted = false;
+    for(uint i = 0; i < self.requestQ.length; i++) {
+      if(!self.requestIdToRequest[self.requestQ[i]].isValid){
+        delete self.requestQ[i];
+        self.requestQ[i] = id;
+        isInserted = true;
+        break;
+      }
+    }
+    if(!isInserted)
+      self.requestQ.push(id);
+
+    self.uintStorage[requestsInQ]++;
 
     if(_tip != 0)
       EthMLTransferLib.transferFromTest(self, msg.sender, address(this), _tip); //Change to transferFrom for build.
@@ -164,13 +189,15 @@ library EthMLLib {
     uint256 _nonce) internal{
     EthMLStorageLib.Request storage request = self.requestIdToRequest[_id];
 
+    emit Test1(2563);
+
     require(!request.minersSubmitted[msg.sender], "Already submitted the value for the request.");
 
     _verifyNonce(self, _nonce);
   
-    request.finalValues[0] = _prediction;
+    request.finalValues[request.predictionsReceived] = _prediction;
     request.minersSubmitted[msg.sender] = true;
-    request.miners[0] = msg.sender;
+    request.miners[request.predictionsReceived] = msg.sender;
     request.predictionsReceived++;
 
     if(request.predictionsReceived == 5) {

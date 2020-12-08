@@ -1,13 +1,15 @@
 const Miner = require("./utils/miner");
-const level = require("level");
+//const level = require("level");
+const DisplayTable = require("./utils/display");
 const configure = require("./utils/configure");
 const BN = require("bn.js");
+const logUpdate = require("log-update");
 
 //Get reference to database store
 //const db = level("./ethML_server/model_store");
 
 //Initialize miner
-const miner = new Miner(process.argv[2]);
+var miner;
 
 var isMining = false;
 
@@ -22,19 +24,21 @@ function startEventListener({ web3, ethML, ethMLAbi }) {
 
 function handleNewRequest({ web3, ethML, ethMLAbi }) {
   if (!isMining) {
-    startMining({ web3, ethML, ethMLAbi });
+    checkAndMine({ web3, ethML, ethMLAbi });
   }
 }
 
 function handleNewBlock({ web3, ethML, ethMLAbi }) {
   if (isMining) {
     isMining = false;
-    console.log("*--Now block formed--*");
+    console.log("*--New block formed--*");
     checkAndMine({ web3, ethML, ethMLAbi });
   }
 }
 
 async function checkAndMine({ web3, ethML, ethMLAbi }) {
+  console.log("**---Waiting to fetch requests--**");
+
   const canGetVars = await ethML.methods.canGetVariables().call();
   if (canGetVars) {
     startMining({ web3, ethML, ethMLAbi });
@@ -68,13 +72,14 @@ async function submitMiningSolution({
         prediction,
         nonce,
       ]),
-      gas: 2000000,
+      gas: 10000000,
     });
 
     console.log("Successfully submitted mining solution for request id: ", id);
   } catch (err) {
     console.log(
-      "Transaction failed (no panic): Block is already mined by 5 miners, or nonce submitted is invalid."
+      err,
+      "Transaction failed (no panic): Block is already mined by 5 miners / nonce submitted is invalid / you have already sumbitted the data for this"
     );
   }
 }
@@ -86,16 +91,23 @@ async function startMining({ web3, ethML, ethMLAbi }) {
 
   isMining = true;
 
-  console.log("*--Started Mining for--*");
-  console.log("RequestId\tChallenge\tDifficulty");
-  console.log("---------\t---------\t----------");
-  console.log(`${id}\t${challenge}\t${difficulty}`);
+  console.log("*-------------Started Mining-------------*");
+  DisplayTable({ id, challenge, difficulty });
+
+  let i = 0;
+
+  // setInterval(() => {
+  //   const { frames } = spinner;
+  //   logUpdate(frames[(i = ++i % frames.length)] + " Unicorns");
+  // }, spinner.interval);
 
   const nonce = await miner.findUnderTargetHash(
     web3,
     new BN(challenge.slice(2), 16),
     new BN(difficulty, 10)
   );
+
+  //clearInterval(timerId);
 
   console.log("Found POW solution: ", nonce);
 
@@ -106,7 +118,11 @@ async function startMining({ web3, ethML, ethMLAbi }) {
 }
 
 (async () => {
-  const { web3, ethML, ethMLAbi } = await configure.init(process.argv[2]);
+  const { web3, ethML, ethMLAbi } = await configure.init();
+  const accounts = await web3.eth.getAccounts();
+  miner = new Miner(accounts[process.argv[2]]);
+  web3.eth.defaultAccount = accounts[process.argv[2]];
   startEventListener({ web3, ethML, ethMLAbi });
   checkAndMine({ web3, ethML, ethMLAbi });
+  //console.log(await ethML.methods.canGetVariables().call());
 })();
