@@ -33,7 +33,7 @@ npm install
 
 Start a local blockchain on localhost:8545 using ganache-cli. Note: Please use the mnemonic as stated below, as the accounts formed get prefunded with the tokens.
 ```
-ganache-cli -m hawk couple problem quantum lemon lava saddle swallow want become forum educate
+ganache-cli -m hawk couple problem quantum lemon lava saddle swallow want become forum educate -l 10000000
 ```
 
 Deploy the contracts using truffle:
