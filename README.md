@@ -11,7 +11,9 @@ The design can be thought of as a two-layer structure. The base layer being the 
 ## Running Locally
 This repo is a truffle project, consisting of the smart contracts and a server implemented in JS.
 
-### Dependencies Installation
+## Dependencies Installation
+
+### Ethereum Dependencies
 
 Clone Git repo:
 ``` 
@@ -29,7 +31,16 @@ Install dependencies:
 npm install 
 ```
 
-### Setup for testing
+### ML Dependencies (Python)
+
+These dependencies can be installed using the python package manager `pip`
+
+- joblib
+- sklearn
+- numpy
+- pandas
+
+## Setup for testing
 
 Start a local blockchain on localhost:8545 using ganache-cli. Note: Please use the mnemonic as stated below, as the accounts formed get prefunded with the tokens.
 ```
@@ -64,7 +75,7 @@ const instance = await UsingEthML.deployed()
 
 Send a prediction request by calling the requestPrediction method is [UsingEthML contract](https://github.com/AnshuJalan/ethML-core/blob/master/contracts/user_contracts/UsingEthML.sol). You can use one of the pre-generated hashed provided in [testSeed file](https://github.com/AnshuJalan/ethML-core/blob/master/.testSeed):
 ```
-await instance.requestPrediction(1, bafkreig4y5i3a6qf3ytuf6jyvwusz4dynvwctjofxv7ovu5nc5bz2ijuua, 0)
+await instance.requestPrediction(1, "bafkreiaeigybm7ca2bk4xc3rfoxuvija53tyekayg37hkarfft2tbn4vem", 0)
 ```
 
 The running servers would catch the generated requests and start mining the result.
